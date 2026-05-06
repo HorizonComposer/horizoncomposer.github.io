@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Spatiotemporally Consistent Driving Video Editing with Enriched Traffic Semantics">
+  <meta name="keywords" content="Generative Motion, Physical Priors, Controllable Properties">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spatiotemporally Consistent Driving Video Editing with Enriched Traffic Semantics</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.24/dist/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-slider@2.0.5/dist/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    
+    .publication-title {
+      font-family: 'Google Sans', sans-serif;
+      font-weight: 500;
+    }
+    
+    .hero {
+      background-color: #f5f5f5;
+      padding: 1rem 0;
+    }
+    
+    .section {
+      padding: 1.5rem 0.5rem;
+    }
+    
+    .site-content {
+      width: 90%;
+      margin: 0 auto;
+    }
+    
+    .container.is-fluid {
+      padding: 0 0.5rem;
+    }
+    
+    .example-container {
+      margin-bottom: 2rem;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 1rem;
+    }
+    
+    .example-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+    }
+    
+    .explanation-text {
+      background-color: #f8f9fa;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin: 0.05rem 0 0.05rem 0;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      /* border-left: 4px solid #3273dc; */
+    }
+    
+    .video-container {
+      margin-top: 1rem;
+    }
+    
+    .columns {
+      margin: 0 !important;
+    }
+    
+    .column {
+      padding: 0.5rem;
+    }
+    
+    .video-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    
+    .column-heading {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin: 0.5rem 0;
+      text-align: center;
+      color: #3273dc;
+    }
+    
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      height: 0;
+      padding-bottom: 50%;
+      overflow: hidden;
+      margin: 0 auto 0.5rem;
+    }
+    
+    .video-wrapper video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background-color: #000;
+      border-radius: 4px;
+    }
+    
+    .fine-control-section {
+      text-align: center;
+    }
+    
+    .section-heading-panel {
+      background: linear-gradient(135deg, #e8f0ff, #f8fbff);
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      width: 100%;
+      margin-bottom: 1rem;
+      box-shadow: 0 6px 18px rgba(50, 115, 220, 0.15);
+      border: 1px solid rgba(50, 115, 220, 0.2);
+    }
+    
+    .section-heading-panel .title {
+      color: #1d4f91;
+      letter-spacing: 0.04em;
+      /* text-transform: uppercase; */
+    }
+    
+    .fine-control-carousel {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .fine-control-nav {
+      border: none;
+      background-color: #3273dc;
+      color: #fff;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s ease;
+    }
+    
+    .fine-control-nav:hover {
+      background-color: #2754a0;
+    }
+    
+    .fine-control-content {
+      flex: 1;
+    }
+    
+    .fine-control-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .fine-control-card {
+      flex: 1 1 220px;
+      max-width: 320px;
+    }
+    
+    .fine-control-video {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #000;
+    }
+    
+    .fine-control-video video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .fine-control-level {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.15rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+    
+    .fine-control-level.low {
+      background-color: #48c78e;
+    }
+    
+    .fine-control-level.medium {
+      background-color: #ffdd57;
+      color: #222;
+    }
+    
+    .fine-control-level.high {
+      background-color: #f14668;
+    }
+    
+    .fine-control-attribute {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #666;
+    }
+    
+    .fine-control-example-title {
+      text-align: center;
+    }
+    
+    .fine-control-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .fine-control-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid #3273dc;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+    
+    .fine-control-dot.is-active {
+      background: #3273dc;
+    }
+    
+    .composition-section {
+      text-align: center;
+    }
+    
+    .composition-description {
+      font-size: 0.95rem;
+      color: #4a4a4a;
+      margin-bottom: 0.75rem;
+    }
+    
+    .composition-label {
+      margin-top: 0.6rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #1e3e6b;
+    }
+    
+    .attribute-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.35rem;
+      margin-top: 0.45rem;
+    }
+    
+    .attribute-tag {
+      background-color: rgba(50, 115, 220, 0.1);
+      color: #1d4f91;
+      padding: 0.2rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .property-carousel-wrapper {
+      width: 100%;
+      margin-bottom: 1.25rem;
+    }
+    
+    .property-carousel-nav {
+      display: flex;
+      gap: 0.85rem;
+      align-items: stretch;
+      width: 100%;
+    }
+    
+    .property-carousel-nav .fine-control-nav {
+      flex: 0 0 auto;
+    }
+    
+    .property-nav-track {
+      flex: 1 1 auto;
+    }
+    
+    .property-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.45rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .property-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid #3273dc;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+    
+    .property-dot.is-active {
+      background: #3273dc;
+    }
+
+    .compound-editing-root {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .compound-example-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .compound-card {
+      border: 1px solid #d6e4fb;
+      border-radius: 10px;
+      background: #fbfdff;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .compound-card-title {
+      margin: 0;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #1d4f91;
+      text-align: center;
+    }
+
+    .compound-instruction {
+      margin: 0;
+      border-radius: 8px;
+      padding: 0.6rem 0.7rem;
+      background: #eef4ff;
+      border: 1px solid #d5e3ff;
+      font-size: 0.9rem;
+      line-height: 1.35;
+      color: #2e3a4a;
+    }
+
+    .compound-video-pair {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.7rem;
+    }
+
+    .compound-video-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .compound-video-label {
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #4a4a4a;
+    }
+    
+    @media (max-width: 768px) {
+      .fine-control-carousel {
+        flex-direction: column;
+      }
+      
+      .fine-control-nav {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .fine-control-card {
+        max-width: 100%;
+      }
+    }
+    
+    .title.is-3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    .speed-control {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 1rem;
+      vertical-align: middle;
+    }
+    
+    .speed-control label {
+      margin-right: 0.5rem;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+    
+    .speed-slider {
+      width: 100px;
+      margin-right: 0.5rem;
+    }
+    
+    .speed-value {
+      font-weight: bold;
+      min-width: 3em;
+      text-align: left;
+    }
+    
+    .abstract {
+      background-color: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer {
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      color: #666;
+    }
+    
+    .instructions {
+      background-color: #f0f8ff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .property-gallery .example-header {
+      margin-bottom: 1rem;
+    }
+    
+    .property-panels {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    
+    .property-panel {
+      border-top: 1px solid #e5e5e5;
+      padding-top: 1.5rem;
+    }
+    
+    .property-panel:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+    
+    .property-panel h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.25rem;
+    }
+    
+    .property-panel small {
+      color: #666;
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+    
+    .thumbnail-track {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      width: 100%;
+    }
+    
+    .thumbnail-card {
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 0.35rem;
+      background: #f7f9fc;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      opacity: 0.7;
+      width: 100%;
+    }
+    
+    .thumbnail-card.current {
+      border-color: #00b4d8;
+      box-shadow: 0 2px 10px rgba(0, 180, 216, 0.2);
+      background: #fff;
+      transform: translateY(-2px);
+      opacity: 1;
+      cursor: default;
+    }
+    
+    .thumbnail-card.thumbnail-error {
+      border-color: #ff6b6b;
+    }
+    
+    .thumbnail-card span {
+      display: block;
+      font-size: 0.8rem;
+      text-align: center;
+      line-height: 1.2;
+    }
+    
+    .thumbnail-image {
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #e9ecef;
+      position: relative;
+      height: 0;
+      padding-bottom: 62%;
+    }
+    
+    .thumbnail-image canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .thumbnail-card.loading::after {
+      content: "Generating preview…";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 0.75rem;
+      color: #666;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 0.25rem 0.45rem;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+    
+    @keyframes carousel-shift-left {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-35%);
+      }
+    }
+    
+    @keyframes carousel-shift-right {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(35%);
+      }
+    }
+    
+    .property-active-media {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      gap: 0.85rem;
+      margin-bottom: 0.75rem;
+      width: 100%;
+    }
+    
+    .model-heading-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.85rem;
+      color: #4a5f82;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+    }
+    
+    .model-heading {
+      flex: 1 1 220px;
+      max-width: 260px;
+      text-align: center;
+      padding: 0.15rem 0;
+    }
+    
+    .variant-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      justify-content: center;
+      gap: 0.85rem;
+      width: 100%;
+      position: relative;
+    }
+    
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1.25rem;
+      margin: 1rem auto 1.5rem;
+      max-width: 100%;
+    }
+
+    /* Baseline comparison: 2-col flow — e.g. Prompt | Input; CCEdit | UniVideo; Cosmos | Ours (or fewer methods per section). */
+    .method-grid.layout-single.comparison-rows {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-flow: row;
+      align-items: stretch;
+    }
+
+    /*
+      When showing all 5 methods + Prompt at once, enforce a 2x3 layout:
+      Top:    Prompt | Input  | Ours
+      Bottom: CCEdit | UniVideo | Cosmos
+    */
+    .method-grid.layout-single.comparison-rows.comparison-baselines-6 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-areas:
+        "prompt input ours"
+        "ccedit univideo cosmos";
+    }
+
+    .method-grid.layout-single.comparison-rows.comparison-baselines-6 > .comparison-prompt-cell {
+      grid-area: prompt;
+    }
+
+    .method-grid.layout-single.comparison-rows.comparison-baselines-6 > .method-column[data-method-key="Input"] {
+      grid-area: input;
+    }
+
+    .method-grid.layout-single.comparison-rows.comparison-baselines-6 > .method-column[data-method-key="Ours"] {
+      grid-area: ours;
+    }
+
+    .method-grid.layout-single.comparison-rows.comparison-baselines-6 > .method-column[data-method-key="CCEdit"] {
+      grid-area: ccedit;
+    }
+
+    .method-grid.layout-single.comparison-rows.comparison-baselines-6 > .method-column[data-method-key="UniVideo"] {
+      grid-area: univideo;
+    }
+
+    .method-grid.layout-single.comparison-rows.comparison-baselines-6 > .method-column[data-method-key="Cosmos"] {
+      grid-area: cosmos;
+    }
+
+    .comparison-prompt-cell {
+      border-radius: 16px;
+      border: 1px solid #dbe4ff;
+      background: #f8faff;
+      padding: 0.5rem 0.4rem 0.6rem;
+      box-shadow: 0 6px 18px rgba(74, 97, 155, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      align-items: stretch;
+      min-height: 0;
+    }
+
+    .comparison-prompt-box {
+      flex: 1 1 auto;
+      margin: 0;
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      border: 2px solid rgba(50, 115, 220, 0.22);
+      background: #ffffff;
+      color: #1f2a44;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      min-height: 120px;
+    }
+
+    /*
+      Property gallery “comparison-rows”: keep Prompt | Input / … layout, but (1) cap prompt influence on
+      column tracks with min-width:0 + wrapping, and (2) use fixed pixel video tiles instead of width:100%
+      so shrinking columns cannot shrink the player boxes.
+    */
+    .property-gallery .method-grid.layout-single.comparison-rows {
+      width: 100%;
+      min-width: 0;
+      gap: 1.5rem;
+    }
+
+    /* Carousel index > 0: only Prompt + Input + Ours — one row, three equal tracks */
+    .property-gallery .method-grid.layout-single.comparison-rows.comparison-compact {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .property-gallery .method-grid.layout-single.comparison-rows > .comparison-prompt-cell,
+    .property-gallery .method-grid.layout-single.comparison-rows > .method-column {
+      min-width: 0;
+    }
+
+    .property-gallery .method-grid.layout-single.comparison-rows > .comparison-prompt-cell {
+      padding: 0.9rem 0.7rem 1.05rem;
+      border-radius: 20px;
+    }
+
+    .property-gallery .method-grid.layout-single.comparison-rows > .method-column {
+      padding: 1rem 0.7rem 1.2rem;
+      gap: 0.75rem;
+      border-radius: 20px;
+    }
+
+    .property-gallery .method-grid.layout-single.comparison-rows .method-heading {
+      font-size: 1.02rem;
+      letter-spacing: 0.07em;
+    }
+
+    .property-gallery .method-grid.layout-single.comparison-rows .method-variant-stack {
+      gap: 0.75rem;
+    }
+
+    .property-gallery .method-grid.layout-single.comparison-rows .comparison-prompt-box {
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      min-height: 148px;
+      padding: 1rem 1.15rem;
+      font-size: 1rem;
+      border-radius: 14px;
+    }
+
+    .property-gallery .method-grid.layout-single.comparison-rows .method-variant-slot .video-wrapper {
+      flex: 0 0 auto;
+      box-sizing: border-box;
+      width: 280px;
+      min-width: 280px;
+      max-width: 280px;
+      height: auto;
+      padding-bottom: 0;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 10px;
+      /* Taller preview than 16:9-ish tiles so headers + video read as a larger card */
+      aspect-ratio: 5 / 4;
+    }
+
+        /* Force property specific grid - 4 columns in one row using full width */
+    .method-grid.force-layout {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      width: 100%;
+      max-width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    /* On medium screens (tablets), force-layout uses 2 columns */
+    @media screen and (max-width: 1200px) and (min-width: 769px) {
+      .method-grid.force-layout {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .method-column {
+      border-radius: 16px;
+      border: 1px solid #dbe4ff;
+      background: #f8faff;
+      padding: 0.5rem 0.4rem 0.6rem;
+      box-shadow: 0 6px 18px rgba(74, 97, 155, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    
+    .method-column.is-baseline.baseline-0 {
+      background: #fdf9ff;
+      border-color: rgba(192, 153, 255, 0.6);
+    }
+    
+    .method-column.is-baseline.baseline-1 {
+      background: #f6fbff;
+      border-color: rgba(118, 191, 255, 0.6);
+    }
+
+    .method-column.is-baseline.baseline-2 {
+      background: #fffaf5;
+      border-color: rgba(255, 179, 102, 0.6);
+    }
+
+    .method-column.is-primary {
+      background: linear-gradient(180deg, rgba(50, 115, 220, 0.12), rgba(50, 115, 220, 0.02));
+      border: 2px solid rgba(50, 115, 220, 0.35);
+      box-shadow: 0 12px 30px rgba(50, 115, 220, 0.18);
+    }
+    
+    .method-heading {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-align: center;
+      margin: 0;
+      color: #1f2a44;
+    }
+    
+    .method-variant-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      width: 100%;
+      align-items: center;
+    }
+    
+    .method-variant-slot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15rem;
+      width: 100%;
+    }
+
+    .variant-tag {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: rgba(50, 115, 220, 0.15);
+      color: #1d2e53;
+      border-radius: 999px;
+      padding: 0.2rem 0.12rem;
+      min-height: 70px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .method-column.is-baseline.baseline-0 .variant-tag {
+      background: rgba(192, 153, 255, 0.2);
+      color: #40215f;
+    }
+    
+    .method-column.is-baseline.baseline-1 .variant-tag {
+      background: rgba(118, 191, 255, 0.2);
+      color: #1b3c6b;
+    }
+
+    .method-column.is-baseline.baseline-2 .variant-tag {
+      background: rgba(255, 179, 102, 0.2);
+      color: #663d00;
+    }
+
+    .method-column.is-primary .variant-tag {
+      background: rgba(50, 115, 220, 0.28);
+      color: #10244a;
+    }
+    
+    .method-variant-slot .video-wrapper {
+      margin: 0;
+      flex: 1 1 auto;
+      padding-bottom: 45%;
+    }
+
+    .property-gallery .method-variant-slot .video-wrapper {
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .variant-row-meta {
+      width: 100%;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #5a6b8c;
+      margin: 0.15rem 0 0;
+    }
+    
+    .variant-row-meta.is-hidden {
+      display: none;
+    }
+    
+    .property-video-wrapper {
+      padding-bottom: 56%;
+      border-radius: 12px;
+      background: #000;
+      max-width: 260px;
+      margin: 0 auto 0.35rem;
+      border: 2px solid transparent;
+    }
+    
+    .property-gallery .property-video-wrapper,
+    .property-gallery .baseline-video-wrapper {
+      max-width: 200px;
+      padding-bottom: 45%;
+      margin: 0 auto;
+    }
+
+    /* Force layout - ensure columns and videos use full width */
+    .method-grid.force-layout .method-column {
+      width: 100%;
+      max-width: none;
+    }
+
+    .method-grid.force-layout .property-video-wrapper,
+    .method-grid.force-layout .baseline-video-wrapper {
+      max-width: none;
+      width: 100%;
+      padding-bottom: 56%;
+    }
+
+    .method-grid.force-layout .method-variant-slot .video-wrapper {
+      max-width: none;
+      width: 100%;
+    }
+
+    .property-extra {
+      width: 100%;
+      max-width: 200px;
+      text-align: center;
+      margin-top: 0;
+    }
+    
+    .property-extra img {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background: #fff;
+      object-fit: contain;
+      max-height: 160px;
+    }
+    
+    .property-extra-label {
+      font-size: 0.8rem;
+      margin-top: 0.35rem;
+      text-align: center;
+      color: #444;
+    }
+
+    .property-meta {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #555;
+      margin-top: -0.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .force-direction-selector {
+      width: 100%;
+      max-width: 350px;
+      margin: 0 auto 1.5rem auto;
+      text-align: center;
+    }
+
+    .force-direction-selector-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+
+    .force-thumbnail-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 62%;
+      border-radius: 8px;
+      overflow: visible;
+      background: #f5f5f5;
+      border: 2px solid #ddd;
+    }
+
+    .force-thumbnail-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .force-arrow {
+      position: absolute;
+      width: 75px;
+      height: 48px;
+      cursor: pointer;
+      transform: translate(0%, -50%);
+      transform-origin: left center;
+      transition: all 0.2s ease;
+      background: none;
+      border: none;
+      padding: 0;
+      z-index: 10;
+    }
+
+    .force-arrow:hover {
+      z-index: 100;
+    }
+
+    .force-arrow.selected {
+      z-index: 50;
+    }
+
+    .force-arrow img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      transition: all 0.2s ease;
+      transform-origin: left center;
+    }
+
+    .force-arrow:hover img {
+      filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.3));
+      transform: scale(1.15);
+      transform-origin: left center;
+    }
+
+    .force-arrow.selected img {
+      filter: drop-shadow(0 4px 12px rgba(255, 0, 0, 0.5));
+      transform: scale(1.25);
+      transform-origin: left center;
+    }
+
+    .force-direction-info {
+      display: none;
+    }
+
+    .interaction-banner {
+      background: linear-gradient(90deg, #e3f2fd, #f0f8ff);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      font-weight: 600;
+      color: #1d4f91;
+      margin: 0.5rem 0 0.5rem;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .prompt-button {
+      background-color: #f6f8fb;
+      color: #ec0606;
+      border: 1px solid #d0d7e0;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 0.4rem;
+      width: auto;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0.02em;
+    }
+
+    .prompt-button:hover {
+      background-color: #f0f3f7;
+      color: #3273dc;
+      border-color: #3273dc;
+    }
+
+    .prompt-button:active {
+      background-color: #6f9fdb;
+    }
+
+    .prompt-display {
+      background-color: #f8f9fa;
+      border-left: 4px solid #3273dc;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #333;
+      display: none;
+      max-width: 100%;
+      word-wrap: break-word;
+    }
+
+    .prompt-display.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .prompt-label {
+      font-weight: 700;
+      color: #1d4f91;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .prompt-text {
+      font-style: italic;
+      color: #555;
+    }
+
+    .video-with-prompt {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .property-shared-info {
+      text-align: center;
+      margin: 0.5rem auto 0.75rem;
+      max-width: 720px;
+    }
+    
+    .property-shared-label {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.15rem;
+    }
+    
+    .property-shared-meta {
+      font-size: 0.9rem;
+      color: #555;
+      margin: 0;
+    }
+
+    /* Adjustments for larger screens */
+    @media screen and (min-width: 1408px) {
+      .container.is-fluid {
+        max-width: 100% !important;
+      }
+      
+      .video-wrapper {
+        padding-bottom: 85%; /* Taller videos on larger screens */
+      }
+    }
+    
+    /* Fix for mobile */
+    @media screen and (max-width: 768px) {
+      .columns.is-mobile {
+        display: block;
+      }
+      
+      .column.is-3 {
+        width: 100%;
+      }
+      
+      .example-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .speed-control {
+        margin: 0.5rem 0 0 0;
+      }
+      
+      .property-active-media {
+        flex-direction: column;
+        align-items: center;
+      }
+    
+      .property-carousel-nav {
+        flex-direction: column;
+      }
+      
+      .property-nav-track {
+        width: 100%;
+      }
+      
+      .thumbnail-card {
+        width: 100%;
+      }
+      
+      .method-grid {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+      }
+
+      .method-column {
+        width: 100%;
+      }
+
+      .property-gallery .method-grid.layout-single.comparison-rows .method-variant-slot .video-wrapper {
+        width: min(280px, 100%);
+        min-width: 0;
+        max-width: min(280px, 100%);
+      }
+      
+      .property-extra {
+        max-width: 80%;
+      }
+
+      .compound-example-row {
+        grid-template-columns: 1fr;
+      }
+
+      .compound-video-pair {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-fluid">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Spatiotemporally Consistent Driving Video Editing with Enriched Traffic Semantics</h1>
+          
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+                <span class="link-block">
+                <a href="./appendix.pdf" target="_blank" class="button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Supplementary PDF</span>
+                </a>
+                </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section site-content">
+  <div class="container is-fluid">
+    <!-- Abstract Section -->
+    <!-- <div class="abstract">
+      <h2 class="title is-4">Abstract</h2>
+      <p>
+      </p>
+    </div> -->
+    
+    <div class="example-container property-gallery">
+      <div class="example-header section-heading-panel">
+        <h2 class="title is-3" style="text-align:center; width: 100%;">Editing Results</h2>
+      </div>
+      <div id="property-panels-baselines" class="property-panels"></div>
+    </div>
+
+    <div class="example-container property-gallery">
+      <div class="example-header section-heading-panel">
+        <h2 class="title is-3" style="text-align:center; width: 100%;">Safety Critical Traffic Semantics</h2>
+      </div>
+      <div id="property-panels-safety" class="property-panels"></div>
+    </div>
+
+    <div class="example-container property-gallery">
+      <div class="example-header section-heading-panel">
+        <h2 class="title is-3" style="text-align:center; width: 100%;">Compound Local and Global Editing</h2>
+      </div>
+      <div id="compound-editing-root" class="compound-editing-root"></div>
+    </div>
+
+    <div class="example-container property-gallery">
+      <div class="example-header section-heading-panel">
+        <h2 class="title is-3" style="text-align:center; width: 100%;">Longtail Scenes</h2>
+      </div>
+      <div id="property-panels-longtail" class="property-panels"></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const DEFAULT_VIDEO_SPEED = 0.9;
+  const METHOD_CONFIGS = [
+    { key: 'Input', label: 'Input', type: 'baseline', colorClass: 'baseline-0' },
+    { key: 'CCEdit', label: 'CCEdit', type: 'baseline', colorClass: 'baseline-1' },
+    { key: 'UniVideo', label: 'UniVideo', type: 'baseline', colorClass: 'baseline-2' },
+    { key: 'Cosmos', label: 'Cosmos', type: 'baseline', colorClass: 'baseline-3' },
+    { key: 'Ours', label: 'Ours', type: 'primary', colorClass: 'is-primary' }
+  ];
+
+  const propertyGalleryData = [
+    {
+      name: 'safety_critical',
+      layout: 'single',
+      methodKeys: ['Input', 'Cosmos', 'Ours'],
+      examples: [
+        {
+          label: 'Cross walk, car appearance.',
+          prompt: 'A driving scene showing sunny conditions during a summer dusk.',
+          variants: [{ label: 'Cross walk, car appearance.', video: 'data_017_000071.mp4' }]
+        },
+        {
+          label: 'Hallucinated Car',
+          prompt: 'A driving scene showing foggy conditions during a spring dawn.',
+          variants: [{ label: 'Hallucinated Car', video: 'data_2021.06.08.14.14.51_veh-35_01508_01763_001353.mp4' }]
+        },
+        {
+          label: 'Turn Lane',
+          prompt: 'A driving scene showing cloudy conditions during spring.',
+          variants: [{ label: 'Turn Lane', video: 'data_293_000004.mp4' }]
+        },
+        {
+          label: 'STOP AHEAD',
+          prompt: 'A driving scene at night.',
+          variants: [{ label: 'STOP AHEAD', video: 'data_193_000034.mp4' }]
+        },
+        {
+          label: 'Traffic Light',
+          prompt: 'A driving scene showing sunny conditions during a autumn daytime.',
+          variants: [{ label: 'Traffic Light', video: 'data_269_000056.mp4' }]
+        },
+        {
+          label: 'BUS ONLY Lane',
+          prompt: 'A driving scene showing cloudy conditions during a autumn dusk.',
+          variants: [{ label: 'BUS ONLY Lane', video: 'data_394_000053.mp4' }]
+        },
+        {
+          label: 'Pedestrians',
+          prompt: 'A driving scene showing cloudy conditions during a autumn dusk.',
+          variants: [{ label: 'Pedestrians', video: 'data_scene-0218_000006.mp4' }]
+        }
+      ]
+    },
+    {
+      name: 'time',
+      layout: 'single',
+      examples: [
+        {
+          label: 'dusk',
+          prompt: 'A driving scene during a autumn dusk.',
+          variants: [{ label: 'dusk', video: 'data_140_000031.mp4' }]
+        },
+        {
+          label: 'night',
+          prompt: 'A driving scene showing foggy conditions during a autumn night.',
+          variants: [{ label: 'night', video: 'data_402_000029.mp4' }]
+        },
+        {
+          label: 'dawn',
+          prompt: 'A driving scene showing sunny conditions at dawn.',
+          variants: [{ label: 'dawn', video: 'data_615_000082.mp4' }]
+        },
+        {
+          label: 'autumn dawn',
+          prompt: 'A driving scene showing snowy conditions during a autumn dawn.',
+          variants: [{ label: 'autumn dawn', video: 'data_boreas-2021-07-27-14-43_001054.mp4' }]
+        }
+      ]
+    },
+    {
+      name: 'weather',
+      layout: 'single',
+      examples: [
+        {
+          label: 'Snowy',
+          prompt: 'A driving scene showing snowy conditions during a spring dawn.',
+          variants: [{ label: 'Snowy', video: 'data_153_000071.mp4' }]
+        },
+        {
+          label: 'Spring night',
+          prompt: 'A driving scene during a spring night.',
+          variants: [{ label: 'Spring night', video: 'data_2021.05.12.19.36.12_veh-35_01179_01278_000399.mp4' }]
+        },
+        {
+          label: 'Cloudy night',
+          prompt: 'A driving scene showing cloudy conditions at night.',
+          variants: [{ label: 'Cloudy night', video: 'data_2021.06.08.12.00.19_veh-35_03451_03644_001518.mp4' }]
+        },
+        {
+          label: 'Rainy winter night',
+          prompt: 'A driving scene showing rainy conditions during a winter night.',
+          variants: [{ label: 'Rainy winter night', video: 'data_567_000041.mp4' }]
+        }
+      ]
+    },
+    {
+      name: 'season',
+      layout: 'single',
+      examples: [
+        {
+          label: 'Snowy autumn night',
+          prompt: 'A driving scene showing snowy conditions during a autumn night.',
+          variants: [{ label: 'Snowy autumn night', video: 'data_694_000043.mp4' }]
+        },
+        {
+          label: 'Summer sunrise',
+          prompt: 'A driving scene showing sunny conditions during a summer dawn.',
+          variants: [{ label: 'Summer sunrise', video: 'data_boreas-2021-01-15-12-17_007947.mp4' }]
+        },
+        {
+          label: 'Summer noon',
+          prompt: 'A driving scene during a summer noon.',
+          variants: [{ label: 'boreas 2021-01-26 010878', video: 'data_boreas-2021-01-26-10-59_010878.mp4' }]
+        },
+        {
+          label: 'Overcast autumn',
+          prompt: 'A driving scene showing cloudy conditions during autumn.',
+          variants: [{ label: 'Overcast autumn', video: 'data_boreas-2021-03-09-14-23_009532.mp4' }]
+        }
+      ]
+    },
+    {
+      name: 'long_tail',
+      layout: 'single',
+      methodKeys: ['Input', 'Ours'],
+      examples: [
+      {
+          label: 'Construction',
+          prompt: 'A driving scene showing sunny conditions during a spring daytime.',
+          variants: [
+            {
+              label: 'Construction',
+              video: 'data_boreas-2021-04-13-14-49_004682.mp4'
+            }
+          ]
+        },
+        {
+          label: 'Background utility vehicle',
+          prompt: 'A driving scene showing rainy conditions during a spring dawn.',
+          variants: [
+            {
+              label: 'Background utility vehicle',
+              video: 'data_boreas-2021-02-02-14-07_009850.mp4'
+            }
+          ]
+        }
+      ]
+    }
+  ];
+
+  const PROPERTY_GALLERY_SECTIONS = [
+    { containerId: 'property-panels-safety', names: ['safety_critical'] },
+    { containerId: 'property-panels-baselines', names: ['time', 'weather', 'season'] },
+    { containerId: 'property-panels-longtail', names: ['long_tail'] }
+  ];
+
+  function createThumbnailFromVideo(src, canvas, button, frameTime) {
+    if (!canvas) {
+      return;
+    }
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    video.src = src;
+    video.muted = true;
+    video.playsInline = true;
+    
+    const drawFrame = () => {
+      const context = canvas.getContext('2d');
+      const aspect = video.videoWidth && video.videoHeight ? video.videoWidth / video.videoHeight : (16 / 9);
+      const targetWidth = 320;
+      const targetHeight = targetWidth / aspect;
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      context.drawImage(video, 0, 0, targetWidth, targetHeight);
+      if (button) {
+        button.classList.remove('loading');
+      }
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+    };
+    
+    let frameCaptured = false;
+    
+    video.addEventListener('loadedmetadata', () => {
+      let seekTime = typeof frameTime === 'number' ? frameTime : 0.15;
+      if (video.duration && seekTime > video.duration) {
+        seekTime = Math.max(0, video.duration - 0.1);
+      }
+      video.currentTime = seekTime;
+    });
+    
+    video.addEventListener('seeked', () => {
+      if (frameCaptured) {
+        return;
+      }
+      frameCaptured = true;
+      drawFrame();
+    });
+    video.addEventListener('error', () => {
+      if (button) {
+        button.classList.remove('loading');
+        button.classList.add('thumbnail-error');
+      }
+      video.removeAttribute('src');
+    });
+  }
+  
+  function buildPropertyGallery() {
+    const getPropertyDisplayName = (property) => {
+      if (property && typeof property.displayName === 'string' && property.displayName.trim()) {
+        return property.displayName.trim();
+      }
+      const rawName = (property && (property.name || property.slug)) ? (property.name || property.slug) : 'Sample';
+      return String(rawName)
+        .replace(/[_-]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+    };
+
+    PROPERTY_GALLERY_SECTIONS.forEach((section) => {
+      const container = document.getElementById(section.containerId);
+      if (!container) {
+        return;
+      }
+
+      section.names.forEach((propertyName) => {
+        const property = propertyGalleryData.find((p) => p.name === propertyName);
+        if (!property) {
+          return;
+        }
+
+      const panel = document.createElement('div');
+      panel.className = 'property-panel';
+      panel.innerHTML = `
+        <h3><b>${getPropertyDisplayName(property)}</b></h3>
+        <small>${property.description || ''}</small>
+        <div class="property-carousel-wrapper">
+          <div class="property-carousel-nav">
+            <button class="fine-control-nav property-nav-btn is-prev" aria-label="Previous example">&lsaquo;</button>
+            <div class="property-nav-track">
+              <div class="thumbnail-track"></div>
+            </div>
+            <button class="fine-control-nav property-nav-btn is-next" aria-label="Next example">&rsaquo;</button>
+          </div>
+          <div class="property-dots"></div>
+        </div>
+        <div class="property-active-media"></div>
+        <div class="property-shared-info">
+          <!-- <p class="property-shared-label"></p> -->
+          <p class="property-shared-meta"></p>
+        </div>
+      `;
+      
+      container.appendChild(panel);
+      
+      const activeMedia = panel.querySelector('.property-active-media');
+      const sharedLabel = panel.querySelector('.property-shared-label');
+      const sharedMeta = panel.querySelector('.property-shared-meta');
+      const carouselTrack = panel.querySelector('.thumbnail-track');
+      const prevButton = panel.querySelector('.property-nav-btn.is-prev');
+      const nextButton = panel.querySelector('.property-nav-btn.is-next');
+      const dotsContainer = panel.querySelector('.property-dots');
+      const propertySlug = (property.slug || property.name || '').toLowerCase().replace(/\s+/g, '');
+      const layoutMode = property.layout === 'paired' ? 'paired' : 'single';
+      const variantRowCount = layoutMode === 'paired' ? 2 : 1;
+
+      const fullMethodKeys = Array.isArray(property.methodKeys) && property.methodKeys.length
+        ? property.methodKeys
+        : METHOD_CONFIGS.map((c) => c.key);
+      const methodConfigs = METHOD_CONFIGS.filter((c) => fullMethodKeys.includes(c.key));
+      const COMPACT_COMPARE_KEYS = ['Input', 'Ours'];
+      
+      const methodGrid = document.createElement('div');
+      methodGrid.className = `method-grid layout-${layoutMode}`;
+      let comparisonPromptBox = null;
+      if (layoutMode === 'single') {
+        methodGrid.classList.add('comparison-rows');
+        const promptCell = document.createElement('div');
+        promptCell.className = 'comparison-prompt-cell';
+        const promptHeading = document.createElement('div');
+        promptHeading.className = 'method-heading';
+        promptHeading.textContent = 'Prompt';
+        comparisonPromptBox = document.createElement('div');
+        comparisonPromptBox.className = 'comparison-prompt-box';
+        comparisonPromptBox.textContent = '(Prompt placeholder — set `prompt` on each example in propertyGalleryData.)';
+        promptCell.appendChild(promptHeading);
+        promptCell.appendChild(comparisonPromptBox);
+        methodGrid.appendChild(promptCell);
+      }
+      activeMedia.appendChild(methodGrid);
+      
+      const methodEntries = [];
+      
+      methodConfigs.forEach((config, index) => {
+        const column = document.createElement('div');
+        column.dataset.methodKey = config.key;
+        column.className = `method-column ${config.type === 'primary' ? 'is-primary' : 'is-baseline'} ${config.colorClass || ''}`;
+        const heading = document.createElement('div');
+        heading.className = 'method-heading';
+        heading.textContent = config.label;
+        column.appendChild(heading);
+        
+        const stack = document.createElement('div');
+        stack.className = 'method-variant-stack';
+        column.appendChild(stack);
+        
+        const variantRefs = [];
+        
+        for (let rowIndex = 0; rowIndex < variantRowCount; rowIndex += 1) {
+          const slot = document.createElement('div');
+          slot.className = 'method-variant-slot';
+          
+          const tag = document.createElement('span');
+          tag.className = 'variant-tag';
+          slot.appendChild(tag);
+          
+          const wrapper = document.createElement('div');
+          wrapper.className = `video-wrapper ${config.type === 'primary' ? 'property-video-wrapper' : 'baseline-video-wrapper'}`;
+          
+          const video = document.createElement('video');
+          video.controls = true;
+          video.preload = 'metadata';
+          video.playsInline = true;
+          video.autoplay = true;
+          video.muted = true;
+          video.loop = true;
+          if (config.type !== 'primary') {
+            video.dataset.model = config.key;
+            video.dataset.row = String(rowIndex);
+          }
+          const source = document.createElement('source');
+          source.type = 'video/mp4';
+          video.appendChild(source);
+          wrapper.appendChild(video);
+          slot.appendChild(wrapper);
+          
+          stack.appendChild(slot);
+          
+          variantRefs.push({
+            slot,
+            tagEl: tag,
+            video,
+            source
+          });
+        }
+        
+        methodGrid.appendChild(column);
+        methodEntries.push({
+          config,
+          column,
+          headingEl: heading,
+          variantRefs
+        });
+      });
+      
+      const variantMetaEls = Array.from({ length: variantRowCount }, () => {
+        const metaEl = document.createElement('p');
+        metaEl.className = 'variant-row-meta is-hidden';
+        activeMedia.appendChild(metaEl);
+        return metaEl;
+      });
+      
+      let extraBox = null;
+      let extraImage = null;
+      let extraLabel = null;
+      let forceDirectionSelector = null;
+      let forceThumbnailImg = null;
+      let forceThumbnailContainer = null;
+      let forceDirectionInfo = null;
+      let currentForceDirection = null;
+
+      if (layoutMode === 'single' && property.extraImageLabel) {
+        if (property.hasForceDirections) {
+          // Create force direction selector - will be prepended before methodGrid
+          forceDirectionSelector = document.createElement('div');
+          forceDirectionSelector.className = 'force-direction-selector is-hidden';
+
+          const selectorLabel = document.createElement('span');
+          selectorLabel.className = 'force-direction-selector-label';
+          selectorLabel.textContent = 'Select Force Direction:';
+          forceDirectionSelector.appendChild(selectorLabel);
+
+          forceThumbnailContainer = document.createElement('div');
+          forceThumbnailContainer.className = 'force-thumbnail-container';
+
+          forceThumbnailImg = document.createElement('img');
+          forceThumbnailImg.className = 'force-thumbnail-img';
+          forceThumbnailContainer.appendChild(forceThumbnailImg);
+
+          forceDirectionSelector.appendChild(forceThumbnailContainer);
+
+          forceDirectionInfo = document.createElement('div');
+          forceDirectionInfo.className = 'force-direction-info';
+          forceDirectionSelector.appendChild(forceDirectionInfo);
+
+          // Prepend to activeMedia (will be before methodGrid)
+          activeMedia.insertBefore(forceDirectionSelector, activeMedia.firstChild);
+        } else {
+          extraBox = document.createElement('div');
+          extraBox.className = 'property-extra is-hidden';
+          extraImage = document.createElement('img');
+          extraLabel = document.createElement('p');
+          extraLabel.className = 'property-extra-label';
+          extraBox.appendChild(extraImage);
+          extraBox.appendChild(extraLabel);
+          activeMedia.appendChild(extraBox);
+        }
+      }
+      
+      const previewCache = property.examples.map(() => null);
+      let currentIndex = 0;
+      
+      const getExampleLabel = (example, idx) => {
+        if (example && typeof example.label === 'string' && example.label.trim().length > 0) {
+          return example.label.trim();
+        }
+        const variantLabel = Array.isArray(example?.variants) && example.variants[0] && example.variants[0].label;
+        if (variantLabel) {
+          return variantLabel;
+        }
+        const baseName = getPropertyDisplayName(property);
+        return `${baseName} #${idx + 1}`;
+      };
+      
+      const getVariantEntries = (example) => {
+        if (Array.isArray(example?.variants) && example.variants.length) {
+          return example.variants;
+        }
+
+        // For force direction examples
+        if (property.hasForceDirections && example?.directions) {
+          const selectedDir = currentForceDirection || example.directions.find(d => d.default) || example.directions[0];
+          const baseVideo = example.baseVideo;
+          const videoPath = '';
+
+          return [{
+            label: selectedDir.label,
+            video: videoPath,
+            meta: '',
+            extraImage: null,
+            extraImageLabel: property.extraImageLabel
+          }];
+        }
+
+        return [{
+          label: example?.variantLabel || example?.label,
+          video: example?.video,
+          meta: example?.variantMeta,
+          extraImage: example?.extraImage,
+          extraImageLabel: example?.extraImageLabel || property.extraImageLabel
+        }];
+      };
+      
+      const getPreviewVideoSrc = (example) => {
+        if (!example) {
+          return '';
+        }
+        if (typeof example.previewVideo === 'string') {
+          return example.previewVideo;
+        }
+        if (property.hasForceDirections && example?.thumbnailVideo) {
+          return example.thumbnailVideo;
+        }
+        const variants = getVariantEntries(example);
+        if (variants.length && variants[0].video) {
+          const filename = variants[0].video.split('/').pop();
+          if (filename) {
+            return `edit_videos/Input/${propertySlug}/${filename}`;
+          }
+          return variants[0].video;
+        }
+        if (example.video) {
+          const filename = example.video.split('/').pop();
+          if (filename) {
+            return `edit_videos/Input/${propertySlug}/${filename}`;
+          }
+          return example.video;
+        }
+        return '';
+      };
+      
+      const renderCarousel = () => {
+        if (!carouselTrack) {
+          return;
+        }
+        const total = property.examples.length;
+        carouselTrack.innerHTML = '';
+        if (prevButton) prevButton.disabled = total <= 1;
+        if (nextButton) nextButton.disabled = total <= 1;
+        if (!total) {
+          return;
+        }
+        
+        property.examples.forEach((example, dataIndex) => {
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'thumbnail-card';
+          card.setAttribute('aria-label', `Show ${getExampleLabel(example, dataIndex)}`);
+          
+          if (dataIndex === currentIndex) {
+            card.classList.add('current');
+            card.disabled = true;
+            card.setAttribute('aria-current', 'true');
+          }
+          
+          const imageWrapper = document.createElement('div');
+          imageWrapper.className = 'thumbnail-image';
+          
+          let canvas = previewCache[dataIndex];
+          if (!canvas) {
+            canvas = document.createElement('canvas');
+            previewCache[dataIndex] = canvas;
+            card.classList.add('loading');
+            createThumbnailFromVideo(getPreviewVideoSrc(example), canvas, card, example.thumbnailTime);
+          }
+          imageWrapper.appendChild(canvas);
+          card.appendChild(imageWrapper);
+          
+          const labelSpan = document.createElement('span');
+          labelSpan.textContent = getExampleLabel(example, dataIndex);
+          card.appendChild(labelSpan);
+          
+          if (dataIndex !== currentIndex) {
+            card.addEventListener('click', () => {
+              setActiveExample(dataIndex);
+            });
+          }
+          
+          carouselTrack.appendChild(card);
+        });
+      };
+      
+      const renderDots = () => {
+        if (!dotsContainer) {
+          return;
+        }
+        dotsContainer.innerHTML = '';
+        property.examples.forEach((example, index) => {
+          const dot = document.createElement('button');
+          dot.className = 'property-dot' + (index === currentIndex ? ' is-active' : '');
+          dot.setAttribute('aria-label', `Go to ${getExampleLabel(example, index)}`);
+          dot.addEventListener('click', () => setActiveExample(index));
+          dotsContainer.appendChild(dot);
+        });
+      };
+      
+      const shiftCarousel = (delta) => {
+        if (!property.examples.length) {
+          return;
+        }
+        setActiveExample(currentIndex + delta);
+      };
+      
+      if (prevButton) {
+        prevButton.addEventListener('click', () => shiftCarousel(-1));
+      }
+      if (nextButton) {
+        nextButton.addEventListener('click', () => shiftCarousel(1));
+      }
+      
+      const updateVariantSlot = (variantData, rowIndex) => {
+        const fallbackLabel = layoutMode === 'paired'
+          ? (rowIndex === 0 ? 'High value' : 'Low value')
+          : (variantData?.label || getPropertyDisplayName(property) || 'Example');
+        const rowLabelText = (variantData?.label || fallbackLabel || '').trim();
+        const badgeText = (variantData?.badge || rowLabelText || '').replace(/value/i, '').trim();
+        
+        methodEntries.forEach(entry => {
+          const slotRef = entry.variantRefs[rowIndex];
+          if (!slotRef) {
+            return;
+          }
+          if (!variantData || !variantData.video) {
+            slotRef.slot.classList.add('is-hidden');
+            if (slotRef.source) {
+              slotRef.source.removeAttribute('src');
+            }
+            slotRef.video.load();
+            return;
+          }
+          slotRef.slot.classList.remove('is-hidden');
+          slotRef.tagEl.textContent = badgeText;
+          slotRef.tagEl.classList.add('is-hidden');
+          
+          let videoSrc = '';
+          const filename = variantData.video ? variantData.video.split('/').pop() : '';
+          videoSrc = filename ? `edit_videos/${entry.config.key}/${propertySlug}/${filename}` : '';
+          
+          if (slotRef.source) {
+            slotRef.source.src = videoSrc;
+          }
+          slotRef.video.load();
+          slotRef.video.playbackRate = DEFAULT_VIDEO_SPEED;
+          if (typeof slotRef.video.play === 'function') {
+            slotRef.video.play().catch(() => {});
+          }
+        });
+        
+        const metaEl = variantMetaEls[rowIndex];
+        if (metaEl) {
+          if (variantData && variantData.meta) {
+            metaEl.textContent = variantData.meta;
+            metaEl.classList.remove('is-hidden');
+          } else {
+            metaEl.textContent = '';
+            metaEl.classList.add('is-hidden');
+          }
+        }
+        
+        if (extraBox && extraImage && extraLabel && rowIndex === 0) {
+          if (variantData && variantData.extraImage) {
+            extraImage.src = variantData.extraImage;
+            extraImage.alt = variantData.extraImageLabel || property.extraImageLabel || `${rowLabelText} reference`;
+            extraLabel.textContent = variantData.extraImageLabel || property.extraImageLabel || 'Reference image';
+            extraBox.classList.remove('is-hidden');
+          } else {
+            extraImage.removeAttribute('src');
+            extraBox.classList.add('is-hidden');
+          }
+        }
+      };
+
+      const renderForceDirections = (example) => {
+        if (!forceDirectionSelector || !property.hasForceDirections || !example?.directions) {
+          if (forceDirectionSelector) {
+            forceDirectionSelector.classList.add('is-hidden');
+          }
+          return;
+        }
+
+        // Show the selector
+        forceDirectionSelector.classList.remove('is-hidden');
+
+        // Set thumbnail image - use the first frame (_ff.png) from the default direction
+        if (forceThumbnailImg && example.baseVideo && example.directions) {
+          const defaultDir = example.directions.find(d => d.default) || example.directions[0];
+          forceThumbnailImg.removeAttribute('src');
+          forceThumbnailImg.alt = 'Force direction scene';
+        }
+
+        // Clear existing arrows
+        const existingArrows = forceThumbnailContainer.querySelectorAll('.force-arrow');
+        existingArrows.forEach(arrow => arrow.remove());
+
+        if (!forceThumbnailContainer) return;
+
+        // Add arrows for each direction
+        example.directions.forEach((direction, idx) => {
+          const arrow = document.createElement('button');
+          arrow.className = 'force-arrow';
+          arrow.type = 'button';
+          arrow.dataset.angle = direction.angle;
+          arrow.dataset.force = direction.force;
+          arrow.dataset.directionIndex = idx;
+          arrow.style.left = `${direction.x}%`;
+          arrow.style.top = `${direction.y}%`;
+          arrow.setAttribute('aria-label', direction.label);
+          arrow.title = direction.label;
+
+          // Create arrow image
+          const arrowImg = document.createElement('img');
+
+          // Check if this is the currently selected direction
+          const isSelected = currentForceDirection
+            ? (currentForceDirection.angle === direction.angle && currentForceDirection.force === direction.force)
+            : direction.default;
+
+          // Use red arrow for selected, blue for others
+          arrowImg.src = isSelected ? 'static/images/red_arrow.png' : 'static/images/yellow_arrow.png';
+          arrowImg.alt = 'Force direction arrow';
+
+          // Calculate rotation based on angle
+          // Arrow images point right by default, so 0° in our system = 0° rotation
+          // The angle from the data represents the force direction
+          arrowImg.style.transform = `rotate(${direction.angle}deg)`;
+
+          arrow.appendChild(arrowImg);
+
+          if (isSelected) {
+            arrow.classList.add('selected');
+            if (forceDirectionInfo) {
+              forceDirectionInfo.textContent = direction.label;
+            }
+          }
+
+          // Add click handler
+          arrow.addEventListener('click', () => {
+            currentForceDirection = direction;
+
+            // Update all arrows - change images and selected class
+            forceThumbnailContainer.querySelectorAll('.force-arrow').forEach(a => {
+              a.classList.remove('selected');
+              const img = a.querySelector('img');
+              if (img) {
+                img.src = 'static/images/yellow_arrow.png';
+              }
+            });
+
+            arrow.classList.add('selected');
+            arrowImg.src = 'static/images/red_arrow.png';
+
+            // Update info display
+            if (forceDirectionInfo) {
+              forceDirectionInfo.textContent = direction.label;
+            }
+
+            // Refresh the videos with new direction
+            const variantEntries = getVariantEntries(example);
+            for (let rowIndex = 0; rowIndex < variantRowCount; rowIndex += 1) {
+              const variantData = variantEntries[rowIndex];
+              updateVariantSlot(variantData, rowIndex);
+            }
+          });
+
+          forceThumbnailContainer.appendChild(arrow);
+        });
+      };
+
+      const setActiveExample = (idx) => {
+        if (!property.examples.length) {
+          return;
+        }
+        const total = property.examples.length;
+        currentIndex = ((idx % total) + total) % total;
+        const example = property.examples[currentIndex];
+        if (!example) {
+          return;
+        }
+
+        const longTailInputOursOnly = property.name === 'long_tail';
+        const alwaysShowCosmos = property.name === 'safety_critical';
+        const visibleMethodKeys = alwaysShowCosmos
+          ? ['Input', 'Cosmos', 'Ours']
+          : COMPACT_COMPARE_KEYS;
+        const showFullBaselines = layoutMode === 'single' && comparisonPromptBox && currentIndex === 0 && !longTailInputOursOnly && !alwaysShowCosmos;
+        methodEntries.forEach((entry) => {
+          const visible = showFullBaselines || visibleMethodKeys.includes(entry.config.key);
+          entry.column.classList.toggle('is-hidden', !visible);
+        });
+        if (layoutMode === 'single' && comparisonPromptBox) {
+          methodGrid.classList.toggle('comparison-compact', !showFullBaselines && !alwaysShowCosmos);
+        methodGrid.classList.toggle('comparison-baselines-6', showFullBaselines);
+        }
+
+        // Reset force direction when switching examples
+        if (property.hasForceDirections && example?.directions) {
+          currentForceDirection = example.directions.find(d => d.default) || example.directions[0];
+        }
+
+        const variantEntries = getVariantEntries(example);
+        for (let rowIndex = 0; rowIndex < variantRowCount; rowIndex += 1) {
+          const variantData = variantEntries[rowIndex];
+          updateVariantSlot(variantData, rowIndex);
+        }
+
+        if (comparisonPromptBox) {
+          const promptText = typeof example.prompt === 'string' && example.prompt.trim().length
+            ? example.prompt.trim()
+            : '(Prompt placeholder — replace with editing instruction.)';
+          comparisonPromptBox.textContent = promptText;
+        }
+
+        const labelText = getExampleLabel(example, currentIndex);
+        if (sharedLabel) {
+          sharedLabel.textContent = labelText;
+        }
+        if (sharedMeta) {
+          const metaText = typeof example.meta === 'string' ? example.meta : '';
+          if (metaText) {
+            sharedMeta.textContent = metaText;
+            sharedMeta.classList.remove('is-hidden');
+          } else {
+            sharedMeta.textContent = '';
+            sharedMeta.classList.add('is-hidden');
+          }
+        }
+
+        // Render force direction selector if applicable
+        renderForceDirections(example);
+
+        renderCarousel();
+        renderDots();
+      };
+      
+      setActiveExample(0);
+      });
+    });
+  }
+
+  const COMPOUND_EDITING_EXAMPLES = [
+    'scene22_20260502_084236',
+    'scene22_20260502_090456',
+    'scene22_20260503_194154',
+    'scene22_20260503_195537',
+    'scene228_20260503_200936',
+    'scene228_20260503_203126',
+    'scene228_20260503_203752',
+    'scene40_20260503_200313',
+    'scene40_20260503_195032'
+  ];
+
+  const getCompoundMediaPath = (exampleId, filename) =>
+    `simvp_videos/${exampleId}/${filename}`;
+
+  const createCompoundVideo = (src) => {
+    const video = document.createElement('video');
+    video.controls = true;
+    video.loop = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.autoplay = true;
+    video.preload = 'metadata';
+
+    const source = document.createElement('source');
+    source.src = src;
+    source.type = 'video/mp4';
+    video.appendChild(source);
+
+    video.addEventListener('loadedmetadata', () => {
+      video.playbackRate = DEFAULT_VIDEO_SPEED;
+      if (typeof video.play === 'function') {
+        video.play().catch(() => {});
+      }
+    });
+
+    return video;
+  };
+
+  const createCompoundVideoPanel = (label, src) => {
+    const panel = document.createElement('div');
+    panel.className = 'compound-video-panel';
+
+    const caption = document.createElement('p');
+    caption.className = 'compound-video-label';
+    caption.textContent = label;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'video-wrapper';
+    wrapper.appendChild(createCompoundVideo(src));
+
+    panel.appendChild(caption);
+    panel.appendChild(wrapper);
+    return panel;
+  };
+
+  const createCompoundCard = (title, panels, instructionText) => {
+    const card = document.createElement('article');
+    card.className = 'compound-card';
+
+    const heading = document.createElement('h3');
+    heading.className = 'compound-card-title';
+    heading.textContent = title;
+    card.appendChild(heading);
+
+    if (typeof instructionText === 'string') {
+      const instruction = document.createElement('p');
+      instruction.className = 'compound-instruction';
+      instruction.textContent = instructionText;
+      card.appendChild(instruction);
+    }
+
+    const pair = document.createElement('div');
+    pair.className = 'compound-video-pair';
+    panels.forEach((panel) => pair.appendChild(panel));
+    card.appendChild(pair);
+
+    return card;
+  };
+
+  const fetchInstructionText = async (exampleId) => {
+    const fallback = 'Instruction unavailable.';
+    try {
+      const response = await fetch(getCompoundMediaPath(exampleId, 'instruction.txt'));
+      if (!response.ok) {
+        return fallback;
+      }
+      const text = await response.text();
+      const cleaned = text.trim();
+      return cleaned || fallback;
+    } catch (error) {
+      return fallback;
+    }
+  };
+
+  const createCompoundExampleRow = async (exampleId) => {
+    const row = document.createElement('div');
+    row.className = 'compound-example-row';
+
+    const originalPanels = [
+      createCompoundVideoPanel('Video', getCompoundMediaPath(exampleId, 'driving_log.mp4')),
+      createCompoundVideoPanel('Trajectory (Original)', getCompoundMediaPath(exampleId, 'trajectory_original.mp4'))
+    ];
+
+    const instructionText = await fetchInstructionText(exampleId);
+    const generatedPanels = [
+      createCompoundVideoPanel('Video', getCompoundMediaPath(exampleId, 'generated_video.mp4')),
+      createCompoundVideoPanel('Trajectory (Ours)', getCompoundMediaPath(exampleId, 'trajectory_modified.mp4'))
+    ];
+
+    row.appendChild(createCompoundCard('Original Reference', originalPanels));
+    row.appendChild(createCompoundCard('Our Edit', generatedPanels, instructionText));
+    return row;
+  };
+
+  const renderCompoundEditingGallery = async () => {
+    const root = document.getElementById('compound-editing-root');
+    if (!root) {
+      return;
+    }
+
+    root.innerHTML = '';
+    for (const exampleId of COMPOUND_EDITING_EXAMPLES) {
+      const row = await createCompoundExampleRow(exampleId);
+      root.appendChild(row);
+    }
+  };
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    buildPropertyGallery();
+    renderCompoundEditingGallery();
+    
+    const allVideos = document.querySelectorAll('video');
+    allVideos.forEach(video => {
+      video.playbackRate = DEFAULT_VIDEO_SPEED;
+    });
+    
+    const examples = document.querySelectorAll('.example-container');
+    let sliderCount = 0;
+    examples.forEach(example => {
+      const speedSlider = example.querySelector('.speed-slider');
+      if (!speedSlider) {
+        return;
+      }
+      
+      sliderCount += 1;
+      const exampleId = `example-${sliderCount}`;
+      example.id = exampleId;
+      
+      const videos = example.querySelectorAll('video');
+      const speedValue = example.querySelector('.speed-value');
+      
+      speedSlider.addEventListener('input', function() {
+        const speed = parseFloat(this.value);
+        if (speedValue) {
+          speedValue.textContent = speed.toFixed(1) + 'x';
+        }
+        videos.forEach(video => {
+          video.playbackRate = speed;
+        });
+      });
+    });
+  });
+</script>
+
+<footer class="footer">
+  <div class="container is-fluid has-text-centered">
+    <p>
+      Anonymous Supplementary Material - Submission Number: 4182
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

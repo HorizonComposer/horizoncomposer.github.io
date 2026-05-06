@@ -1,0 +1,1 @@
+remove car 0, and make it foggy

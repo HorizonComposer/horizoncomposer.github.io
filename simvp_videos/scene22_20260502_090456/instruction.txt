@@ -1,0 +1,1 @@
+remove agent 2, make ego turn right and make pedestrian 11 yield to ego at the intersection, and make it foggy
