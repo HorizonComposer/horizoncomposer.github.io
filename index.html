@@ -338,6 +338,29 @@
       gap: 1rem;
     }
 
+    .compound-active-row {
+      width: 100%;
+    }
+
+    .compound-editing-root .property-nav-track {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .compound-editing-root .thumbnail-track {
+      display: flex;
+      gap: 0.75rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-behavior: smooth;
+      padding-bottom: 0.2rem;
+    }
+
+    .compound-editing-root .thumbnail-card {
+      flex: 0 0 160px;
+      width: 160px;
+    }
+
     .compound-example-row {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1293,6 +1316,13 @@
 
     <div class="example-container property-gallery">
       <div class="example-header section-heading-panel">
+        <h2 class="title is-3" style="text-align:center; width: 100%;">More Comparisons With Baselines</h2>
+      </div>
+      <div id="property-panels-more-baselines" class="property-panels"></div>
+    </div>
+
+    <div class="example-container property-gallery">
+      <div class="example-header section-heading-panel">
         <h2 class="title is-3" style="text-align:center; width: 100%;">Longtail Scenes</h2>
       </div>
       <div id="property-panels-longtail" class="property-panels"></div>
@@ -1306,7 +1336,7 @@
     { key: 'Input', label: 'Input', type: 'baseline', colorClass: 'baseline-0' },
     { key: 'CCEdit', label: 'CCEdit', type: 'baseline', colorClass: 'baseline-1' },
     { key: 'UniVideo', label: 'UniVideo', type: 'baseline', colorClass: 'baseline-2' },
-    { key: 'Cosmos', label: 'Cosmos', type: 'baseline', colorClass: 'baseline-3' },
+    { key: 'Cosmos', label: 'SyntheticPip', type: 'baseline', colorClass: 'baseline-3' },
     { key: 'Ours', label: 'Ours', type: 'primary', colorClass: 'is-primary' }
   ];
 
@@ -1432,6 +1462,27 @@
       ]
     },
     {
+      name: 'more_baselines',
+      layout: 'single',
+      examples: [
+        {
+          label: 'dusk',
+          prompt: 'A driving scene during a autumn dusk.',
+          variants: [{ label: 'dusk', video: 'data_140_000031.mp4' }]
+        },
+        {
+          label: 'Snowy',
+          prompt: 'A driving scene showing snowy conditions during a spring dawn.',
+          variants: [{ label: 'Snowy', video: 'data_153_000071.mp4' }]
+        },
+        {
+          label: 'Snowy autumn night',
+          prompt: 'A driving scene showing snowy conditions during a autumn night.',
+          variants: [{ label: 'Snowy autumn night', video: 'data_694_000043.mp4' }]
+        }
+      ]
+    },
+    {
       name: 'long_tail',
       layout: 'single',
       methodKeys: ['Input', 'Ours'],
@@ -1463,6 +1514,7 @@
   const PROPERTY_GALLERY_SECTIONS = [
     { containerId: 'property-panels-safety', names: ['safety_critical'] },
     { containerId: 'property-panels-baselines', names: ['time', 'weather', 'season'] },
+    { containerId: 'property-panels-more-baselines', names: ['more_baselines'] },
     { containerId: 'property-panels-longtail', names: ['long_tail'] }
   ];
 
@@ -2043,10 +2095,11 @@
 
         const longTailInputOursOnly = property.name === 'long_tail';
         const alwaysShowCosmos = property.name === 'safety_critical';
+        const alwaysShowFullBaselines = property.name === 'more_baselines';
         const visibleMethodKeys = alwaysShowCosmos
           ? ['Input', 'Cosmos', 'Ours']
           : COMPACT_COMPARE_KEYS;
-        const showFullBaselines = layoutMode === 'single' && comparisonPromptBox && currentIndex === 0 && !longTailInputOursOnly && !alwaysShowCosmos;
+        const showFullBaselines = layoutMode === 'single' && comparisonPromptBox && alwaysShowFullBaselines && !longTailInputOursOnly && !alwaysShowCosmos;
         methodEntries.forEach((entry) => {
           const visible = showFullBaselines || visibleMethodKeys.includes(entry.config.key);
           entry.column.classList.toggle('is-hidden', !visible);
@@ -2181,6 +2234,25 @@
     return card;
   };
 
+  const createCompoundExampleRow = (exampleId, instructionText) => {
+    const row = document.createElement('div');
+    row.className = 'compound-example-row';
+
+    const originalPanels = [
+      createCompoundVideoPanel('Video', getCompoundMediaPath(exampleId, 'driving_log.mp4')),
+      createCompoundVideoPanel('Trajectory (Original)', getCompoundMediaPath(exampleId, 'trajectory_original.mp4'))
+    ];
+
+    const generatedPanels = [
+      createCompoundVideoPanel('Video', getCompoundMediaPath(exampleId, 'generated_video.mp4')),
+      createCompoundVideoPanel('Trajectory (Ours)', getCompoundMediaPath(exampleId, 'trajectory_modified.mp4'))
+    ];
+
+    row.appendChild(createCompoundCard('Original Reference', originalPanels));
+    row.appendChild(createCompoundCard('Our Edit', generatedPanels, instructionText));
+    return row;
+  };
+
   const fetchInstructionText = async (exampleId) => {
     const fallback = 'Instruction unavailable.';
     try {
@@ -2196,37 +2268,113 @@
     }
   };
 
-  const createCompoundExampleRow = async (exampleId) => {
-    const row = document.createElement('div');
-    row.className = 'compound-example-row';
-
-    const originalPanels = [
-      createCompoundVideoPanel('Video', getCompoundMediaPath(exampleId, 'driving_log.mp4')),
-      createCompoundVideoPanel('Trajectory (Original)', getCompoundMediaPath(exampleId, 'trajectory_original.mp4'))
-    ];
-
-    const instructionText = await fetchInstructionText(exampleId);
-    const generatedPanels = [
-      createCompoundVideoPanel('Video', getCompoundMediaPath(exampleId, 'generated_video.mp4')),
-      createCompoundVideoPanel('Trajectory (Ours)', getCompoundMediaPath(exampleId, 'trajectory_modified.mp4'))
-    ];
-
-    row.appendChild(createCompoundCard('Original Reference', originalPanels));
-    row.appendChild(createCompoundCard('Our Edit', generatedPanels, instructionText));
-    return row;
-  };
-
   const renderCompoundEditingGallery = async () => {
     const root = document.getElementById('compound-editing-root');
     if (!root) {
       return;
     }
 
-    root.innerHTML = '';
-    for (const exampleId of COMPOUND_EDITING_EXAMPLES) {
-      const row = await createCompoundExampleRow(exampleId);
-      root.appendChild(row);
+    root.innerHTML = `
+      <div class="property-carousel-wrapper">
+        <div class="property-carousel-nav">
+          <button class="fine-control-nav property-nav-btn is-prev" aria-label="Previous compound example">&lsaquo;</button>
+          <div class="property-nav-track">
+            <div class="thumbnail-track"></div>
+          </div>
+          <button class="fine-control-nav property-nav-btn is-next" aria-label="Next compound example">&rsaquo;</button>
+        </div>
+        <div class="property-dots"></div>
+      </div>
+      <div class="compound-active-row"></div>
+    `;
+
+    const track = root.querySelector('.thumbnail-track');
+    const prevButton = root.querySelector('.property-nav-btn.is-prev');
+    const nextButton = root.querySelector('.property-nav-btn.is-next');
+    const dotsContainer = root.querySelector('.property-dots');
+    const activeRow = root.querySelector('.compound-active-row');
+    if (!track || !prevButton || !nextButton || !dotsContainer || !activeRow) {
+      return;
     }
+
+    const examples = await Promise.all(
+      COMPOUND_EDITING_EXAMPLES.map(async (exampleId) => ({
+        id: exampleId,
+        instructionText: await fetchInstructionText(exampleId)
+      }))
+    );
+    if (!examples.length) {
+      return;
+    }
+
+    const cardWidth = 160;
+    const cardGap = 12;
+    let currentIndex = 0;
+
+    const scrollToCurrent = () => {
+      const maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
+      const target = Math.min(currentIndex * (cardWidth + cardGap), maxScroll);
+      track.scrollTo({ left: target, behavior: 'smooth' });
+    };
+
+    const setActiveExample = (index) => {
+      currentIndex = Math.max(0, Math.min(index, examples.length - 1));
+      const selected = examples[currentIndex];
+      activeRow.innerHTML = '';
+      activeRow.appendChild(createCompoundExampleRow(selected.id, selected.instructionText));
+
+      const cards = track.querySelectorAll('.thumbnail-card');
+      cards.forEach((card, idx) => {
+        const isCurrent = idx === currentIndex;
+        card.classList.toggle('current', isCurrent);
+        card.disabled = isCurrent;
+        if (isCurrent) {
+          card.setAttribute('aria-current', 'true');
+        } else {
+          card.removeAttribute('aria-current');
+        }
+      });
+      const dots = dotsContainer.querySelectorAll('.property-dot');
+      dots.forEach((dot, idx) => dot.classList.toggle('is-active', idx === currentIndex));
+
+      prevButton.disabled = currentIndex === 0;
+      nextButton.disabled = currentIndex >= examples.length - 1;
+      scrollToCurrent();
+    };
+
+    examples.forEach((example, index) => {
+      const thumbnailSrc = getCompoundMediaPath(example.id, 'generated_video.mp4');
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'thumbnail-card';
+      card.setAttribute('aria-label', `Compound example ${index + 1}`);
+
+      const thumbWrapper = document.createElement('div');
+      thumbWrapper.className = 'thumbnail-image';
+      const canvas = document.createElement('canvas');
+      thumbWrapper.appendChild(canvas);
+      card.appendChild(thumbWrapper);
+
+      const label = document.createElement('span');
+      label.textContent = `Example ${index + 1}`;
+      card.appendChild(label);
+
+      createThumbnailFromVideo(thumbnailSrc, canvas, card, 0.2);
+      card.addEventListener('click', () => setActiveExample(index));
+      track.appendChild(card);
+
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'property-dot';
+      dot.setAttribute('aria-label', `Go to compound example ${index + 1}`);
+      dot.addEventListener('click', () => setActiveExample(index));
+      dotsContainer.appendChild(dot);
+    });
+
+    prevButton.addEventListener('click', () => setActiveExample(currentIndex - 1));
+    nextButton.addEventListener('click', () => setActiveExample(currentIndex + 1));
+
+    setActiveExample(0);
   };
   
   document.addEventListener('DOMContentLoaded', function() {
