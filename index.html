@@ -2150,15 +2150,15 @@
   }
 
   const COMPOUND_EDITING_EXAMPLES = [
-    'scene22_20260502_084236',
-    'scene22_20260502_090456',
-    'scene22_20260503_194154',
-    'scene22_20260503_195537',
-    'scene228_20260503_200936',
-    'scene228_20260503_203126',
-    'scene228_20260503_203752',
-    'scene40_20260503_200313',
-    'scene40_20260503_195032'
+    { id: 'scene22_20260502_084236', instructionText: 'replace agent 2 with an ambulance, make ego overtake agent 2 which yields, and make it rain' },
+    { id: 'scene22_20260502_090456', instructionText: 'remove agent 2, make ego turn right and make pedestrian 11 yield to ego at the intersection, and make it foggy' },
+    { id: 'scene22_20260503_194154', instructionText: 'ego going straight, in leftmost lane, crossing an intersection, slowing down, and make it night' },
+    { id: 'scene22_20260503_195537', instructionText: 'remove car 2, and make it foggy' },
+    { id: 'scene228_20260503_200936', instructionText: 'car 0 slowing down, and make it rainy' },
+    { id: 'scene228_20260503_203126', instructionText: 'remove car 0, and make it foggy' },
+    { id: 'scene228_20260503_203752', instructionText: 'car 8 turning left, in middle lane, speeding up, and make it snowy winter' },
+    { id: 'scene40_20260503_200313', instructionText: 'ego going straight, changing lanes from middle lane to leftmost lane, speeding up, and make it snowy winter' },
+    { id: 'scene40_20260503_195032', instructionText: 'remove car 0, and make it autumn' }
   ];
 
   const getCompoundMediaPath = (exampleId, filename) =>
@@ -2248,22 +2248,7 @@
     return row;
   };
 
-  const fetchInstructionText = async (exampleId) => {
-    const fallback = 'Instruction unavailable.';
-    try {
-      const response = await fetch(getCompoundMediaPath(exampleId, 'instruction.txt'));
-      if (!response.ok) {
-        return fallback;
-      }
-      const text = await response.text();
-      const cleaned = text.trim();
-      return cleaned || fallback;
-    } catch (error) {
-      return fallback;
-    }
-  };
-
-  const renderCompoundEditingGallery = async () => {
+  const renderCompoundEditingGallery = () => {
     const root = document.getElementById('compound-editing-root');
     if (!root) {
       return;
@@ -2292,12 +2277,7 @@
       return;
     }
 
-    const examples = await Promise.all(
-      COMPOUND_EDITING_EXAMPLES.map(async (exampleId) => ({
-        id: exampleId,
-        instructionText: await fetchInstructionText(exampleId)
-      }))
-    );
+    const examples = COMPOUND_EDITING_EXAMPLES;
     if (!examples.length) {
       return;
     }
